@@ -241,7 +241,7 @@ namespace Exercise6
                 .Select(gr =>
                     new
                     {
-                        Praca = gr.Select(g => g.Job).First(),
+                        Praca = gr.Key,
                         LiczbaPracownikow = gr.Count()
                     });
             return result;
@@ -277,20 +277,22 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task10()
         {
-            IEnumerable<object> result = Emps.Select(e => new
-            {
-                e.Ename,
-                Job = (string?)e.Job,
-                e.HireDate
-            }).Union(new[]
-            {
+            IEnumerable<object> result = Emps.Select(e =>
                 new
                 {
-                    Ename = "Brak wartości",
-                    Job = (string?)null,
-                    HireDate = (DateTime?)null
-                }
-            });
+                    e.Ename,
+                    Job = (string?)e.Job,
+                    e.HireDate
+                }).Union(
+                new[]
+                {
+                    new
+                    {
+                        Ename = "Brak wartości",
+                        Job = (string?)null,
+                        HireDate = (DateTime?)null
+                    }
+                });
             return result;
         }
 
@@ -310,17 +312,19 @@ namespace Exercise6
             IEnumerable<object> result = Depts.GroupJoin(Emps,
                     dept => dept.Deptno,
                     emp => emp.Deptno,
-                    (dept, employees) => new
-                    {
-                        Dept = dept,
-                        Employees = employees
-                    })
+                    (dept, employees) =>
+                        new
+                        {
+                            Dept = dept,
+                            Employees = employees
+                        })
                 .Where(e => e.Employees.Count() > 1)
-                .Select(e => new
-                {
-                    Name = e.Dept.Dname,
-                    numOfEmployees = e.Employees.Count()
-                });
+                .Select(e =>
+                    new
+                    {
+                        Name = e.Dept.Dname,
+                        numOfEmployees = e.Employees.Count()
+                    });
             return result;
         }
 
@@ -364,11 +368,12 @@ namespace Exercise6
             IEnumerable<Dept> result = Depts.GroupJoin(Emps,
                     dept => dept.Deptno,
                     emp => emp.Deptno,
-                    (dept, employees) => new
-                    {
-                        Dept = dept,
-                        Employees = employees
-                    })
+                    (dept, employees) =>
+                        new
+                        {
+                            Dept = dept,
+                            Employees = employees
+                        })
                 .Where(gr => gr.Employees.Count() == 5 || !gr.Employees.Any())
                 .Select(gr => gr.Dept);
             //result =
@@ -384,9 +389,9 @@ namespace Exercise6
             IEnumerable<Emp> employees = chief.ToList();
 
             return chief.Join(employees,
-                chief => chief.Empno,
-                employee => employee.Mgr?.Empno,
-                (chief, employee) => chief)
+                    chief => chief.Empno,
+                    employee => employee.Mgr?.Empno,
+                    (chief, employee) => chief)
                 .Distinct()
                 .OrderBy(e => e.Ename)
                 .ThenByDescending(e => e.Salary);
